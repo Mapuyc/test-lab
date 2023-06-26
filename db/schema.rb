@@ -10,7 +10,55 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_08_24_103807) do
+ActiveRecord::Schema.define(version: 2023_06_26_090226) do
+
+  create_table "classrooms", force: :cascade do |t|
+    t.string "name"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+  end
+
+  create_table "days", force: :cascade do |t|
+    t.string "name"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+  end
+
+  create_table "days_sections", id: false, force: :cascade do |t|
+    t.integer "section_id", null: false
+    t.integer "day_id", null: false
+    t.index ["day_id", "section_id"], name: "index_days_sections_on_day_id_and_section_id"
+    t.index ["section_id", "day_id"], name: "index_days_sections_on_section_id_and_day_id"
+  end
+
+  create_table "enrollments", force: :cascade do |t|
+    t.integer "student_id"
+    t.integer "section_id"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["section_id"], name: "index_enrollments_on_section_id"
+    t.index ["student_id"], name: "index_enrollments_on_student_id"
+  end
+
+  create_table "sections", force: :cascade do |t|
+    t.integer "teacher_id"
+    t.integer "subject_id"
+    t.integer "classroom_id"
+    t.time "start_time"
+    t.time "end_time"
+    t.integer "duration"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["classroom_id"], name: "index_sections_on_classroom_id"
+    t.index ["subject_id"], name: "index_sections_on_subject_id"
+    t.index ["teacher_id"], name: "index_sections_on_teacher_id"
+  end
+
+  create_table "students", force: :cascade do |t|
+    t.string "name"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+  end
 
   create_table "subjects", force: :cascade do |t|
     t.string "name", null: false
@@ -37,6 +85,11 @@ ActiveRecord::Schema.define(version: 2020_08_24_103807) do
     t.datetime "updated_at", precision: 6, null: false
   end
 
+  add_foreign_key "enrollments", "sections"
+  add_foreign_key "enrollments", "students"
+  add_foreign_key "sections", "classrooms"
+  add_foreign_key "sections", "subjects"
+  add_foreign_key "sections", "teachers"
   add_foreign_key "teacher_subjects", "subjects"
   add_foreign_key "teacher_subjects", "teachers"
 end
