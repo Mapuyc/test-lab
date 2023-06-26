@@ -1,4 +1,6 @@
 class EnrollmentsController < ApplicationController
+	before_action :set_enrollments, only: %i[index download_pdf]
+
   def index
   	@sections = Section.all
     @enrollments = current_user.enrollments.includes(section: [:teacher, :subject, :classroom])
@@ -27,9 +29,21 @@ class EnrollmentsController < ApplicationController
     end
   end
 
+  def download_pdf
+	  pdf = PrawnRails::Document.new
+	  pdf.text "Enrollments"
+  	pdf.move_down 20
+  	pdf.table @enrollments.collect {|en| en.pdf_data }
+	  send_data pdf.render, filename: "document.pdf", type: "application/pdf", disposition: "attachment"
+	end
+
   private
 
   def enrollment_params
     params.require(:enrollment).permit(:section_id)
+  end
+
+  def set_enrollments
+  	@enrollments = current_user.enrollments.includes(section: [:teacher, :subject, :classroom])
   end
 end

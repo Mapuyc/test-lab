@@ -4,6 +4,18 @@ class Enrollment < ApplicationRecord
 
   validate :validate_time_overlap
 
+  def pdf_data
+    [].tap do |data|
+      data << section.teacher.first_name + ' ' + section.teacher.last_name
+      data << section.subject.name 
+      data << section.duration 
+      data << section.subject.description 
+      data << section.days.pluck(:name).join(', ')
+      data << section.start_time.strftime("at %I:%M%p") 
+      data << section.end_time.strftime("at %I:%M%p")
+    end
+  end
+
   private
 
   def validate_time_overlap
