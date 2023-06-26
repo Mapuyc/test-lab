@@ -3,10 +3,11 @@ require 'rails_helper'
 RSpec.describe "Enrollments", type: :request do
   let!(:student) { FactoryBot.create(:student) }
   let!(:section) { FactoryBot.create(:section) }
+  let(:enrollment) { FactoryBot.create(:enrollment, student: student, section: section) }
 
   describe "GET /enrollments" do
     it "displays the index page with sections and enrollments" do
-      enrollment = FactoryBot.create(:enrollment, student: student, section: section)
+      enrollment
       get enrollments_path
       expect(response).to have_http_status(200)
       expect(response.body).to include(section.subject.name)
@@ -44,7 +45,9 @@ RSpec.describe "Enrollments", type: :request do
   end
 
   describe "DELETE /enrollments/:id" do
-    let!(:enrollment) { FactoryBot.create(:enrollment, student: student, section: section) }
+    before do 
+      enrollment
+    end
 
     it "destroys the requested enrollment" do
       expect {
@@ -55,6 +58,19 @@ RSpec.describe "Enrollments", type: :request do
     it "redirects to the enrollments index" do
       delete enrollment_path(enrollment)
       expect(response).to redirect_to(enrollments_path)
+    end
+  end
+
+  describe "GET /download_pdf" do
+    before do 
+      enrollment
+    end
+    
+    it "returns a PDF file with enrollments data" do
+      get download_pdf_path
+
+      expect(response.content_type).to eq("application/pdf")
+      expect(response.headers["Content-Disposition"]).to include("attachment")
     end
   end
 end
