@@ -18,4 +18,3 @@ json.classroom do
 end
 
 json.days enrollment.section.days.pluck(:name)
-json.url subject_url(enrolment.subject, format: :json)

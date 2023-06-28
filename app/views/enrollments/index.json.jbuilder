@@ -1,1 +1,1 @@
-json.array! @enrolments, partial: 'enrolments/enrolment', as: :enrolment
+json.array! @enrollments, partial: 'enrollments/enrollment', as: :enrollment
